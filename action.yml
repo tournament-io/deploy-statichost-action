@@ -1,0 +1,54 @@
+name: 'Deploy to StaticHost.eu'
+description: 'Deploy a static site to StaticHost.eu by zipping and uploading a directory'
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
+
+inputs:
+  api-token:
+    description: 'StaticHost.eu API token (create one at https://builder.statichost.eu/account)'
+    required: true
+  site-name:
+    description: 'Name of the site on StaticHost.eu'
+    required: true
+  path:
+    description: 'Path to the directory to deploy'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Deploy to StaticHost.eu
+      shell: bash
+      env:
+        STATICHOST_APIKEY: ${{ inputs.api-token }}
+      run: |
+        set -euo pipefail
+
+        SITE_NAME="${{ inputs.site-name }}"
+        DIRECTORY="${{ inputs.path }}"
+
+        if [ ! -d "$DIRECTORY" ]; then
+          echo "::error::Directory '$DIRECTORY' does not exist"
+          exit 1
+        fi
+
+        BUILDER_HOST="${STATICHOST_BUILDER:-https://builder.statichost.eu}"
+
+        TEMP_ZIP="$(mktemp).zip"
+        trap "rm -f $TEMP_ZIP" EXIT
+
+        echo "Zipping directory '$DIRECTORY'..."
+        cd "$DIRECTORY"
+        zip -qr "$TEMP_ZIP" .
+
+        echo "Uploading to $BUILDER_HOST/$SITE_NAME/drop..."
+        curl --fail-with-body \
+          -X POST "$BUILDER_HOST/$SITE_NAME/drop" \
+          -H "Authorization: Bearer $STATICHOST_APIKEY" \
+          -H "Content-Type: application/zip" \
+          -H "Accept: text/plain" \
+          --data-binary "@$TEMP_ZIP"
+
+        echo ""
+        echo "Upload complete!"
