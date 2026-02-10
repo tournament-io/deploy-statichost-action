@@ -39,7 +39,7 @@ jobs:
         run: npm ci && npm run build
 
       - name: Deploy to StaticHost.eu
-        uses: tournament.io/deploy-statichost-action@v1
+        uses: tournament-io/deploy-statichost-action@v1
         with:
           api-token: ${{ secrets.STATICHOST_API_TOKEN }}
           site-name: my-site
