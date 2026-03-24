@@ -43,12 +43,19 @@ runs:
         zip -qr "$TEMP_ZIP" .
 
         echo "Uploading to $BUILDER_HOST/$SITE_NAME/drop..."
-        curl --fail-with-body \
+        RESPONSE=$(curl --fail-with-body -s \
           -X POST "$BUILDER_HOST/$SITE_NAME/drop" \
           -H "Authorization: Bearer $STATICHOST_APIKEY" \
           -H "Content-Type: application/zip" \
           -H "Accept: text/plain" \
-          --data-binary "@$TEMP_ZIP"
+          --data-binary "@$TEMP_ZIP")
+
+        echo "$RESPONSE"
+
+        if echo "$RESPONSE" | grep -qi "ERROR"; then
+          echo "::error::Deployment failed — server reported an error (see output above)"
+          exit 1
+        fi
 
         echo ""
         echo "Upload complete!"
