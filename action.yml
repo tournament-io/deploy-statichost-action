@@ -50,9 +50,10 @@ runs:
           -H "Accept: text/plain" \
           --data-binary "@$TEMP_ZIP")
 
-        echo "$RESPONSE"
+        CLEAN_RESPONSE=$(echo "$RESPONSE" | sed 's/<[^>]*>//g' | sed 's/^ *//;/^$/d')
+        echo "$CLEAN_RESPONSE"
 
-        if echo "$RESPONSE" | grep -qi "ERROR"; then
+        if echo "$CLEAN_RESPONSE" | grep -qi "ERROR"; then
           echo "::error::Deployment failed — server reported an error (see output above)"
           exit 1
         fi
