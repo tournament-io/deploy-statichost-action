@@ -22,11 +22,10 @@ runs:
       shell: bash
       env:
         STATICHOST_APIKEY: ${{ inputs.api-token }}
+        SITE_NAME: ${{ inputs.site-name }}
+        DIRECTORY: ${{ inputs.path }}
       run: |
         set -euo pipefail
-
-        SITE_NAME="${{ inputs.site-name }}"
-        DIRECTORY="${{ inputs.path }}"
 
         if [ ! -d "$DIRECTORY" ]; then
           echo "::error::Directory '$DIRECTORY' does not exist"
@@ -36,7 +35,7 @@ runs:
         BUILDER_HOST="${STATICHOST_BUILDER:-https://builder.statichost.eu}"
 
         TEMP_ZIP="$(mktemp).zip"
-        trap "rm -f $TEMP_ZIP" EXIT
+        trap 'rm -f -- "$TEMP_ZIP"' EXIT
 
         echo "Zipping directory '$DIRECTORY'..."
         cd "$DIRECTORY"
