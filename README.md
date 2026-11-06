@@ -4,16 +4,16 @@ A GitHub Action to deploy static sites to [StaticHost.eu](https://www.statichost
 
 ## Inputs
 
-| Input | Required | Description |
-|-------|----------|-------------|
-| `api-token` | Yes | StaticHost.eu API token |
-| `site-name` | Yes | Name of the site on StaticHost.eu |
-| `path` | Yes | Path to the directory to deploy |
+| Input       | Required | Description                       |
+| ----------- | -------- | --------------------------------- |
+| `api-token` | Yes      | StaticHost.eu API token           |
+| `site-name` | Yes      | Name of the site on StaticHost.eu |
+| `path`      | Yes      | Path to the directory to deploy   |
 
 ## Usage
 
 ```yaml
-- uses: tournament.io/deploy-statichost-action@v1
+- uses: tournament-io/deploy-statichost-action@v1
   with:
     api-token: ${{ secrets.STATICHOST_API_TOKEN }}
     site-name: my-site
